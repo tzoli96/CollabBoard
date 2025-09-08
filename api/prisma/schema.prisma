@@ -29,6 +29,7 @@ model User {
   projectAssignments ProjectAssignment[] @relation("UserProjects")
   createdTeams       Team[]              @relation("TeamCreator")
   createdProjects    Project[]           @relation("ProjectCreator")
+  activities         Activity[]          @relation("UserActivities")
 
   @@map("users")
 }
@@ -45,9 +46,10 @@ model Team {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  creator  User         @relation("TeamCreator", fields: [createdBy], references: [id])
-  members  TeamMember[] @relation("TeamMembers")
-  projects Project[]    @relation("TeamProjects")
+  creator   User         @relation("TeamCreator", fields: [createdBy], references: [id])
+  members   TeamMember[] @relation("TeamMembers")
+  projects  Project[]    @relation("TeamProjects")
+  activities Activity[]  @relation("TeamActivities")
 
   @@map("teams")
 }
@@ -87,6 +89,7 @@ model Project {
   team        Team                @relation("TeamProjects", fields: [teamId], references: [id], onDelete: Cascade)
   creator     User                @relation("ProjectCreator", fields: [createdBy], references: [id])
   assignments ProjectAssignment[] @relation("ProjectAssignments")
+  activities  Activity[]          @relation("ProjectActivities")
 
   @@map("projects")
 }
@@ -122,4 +125,26 @@ enum Role {
 enum Status {
   ACTIVE // Aktív
   COMPLETED // Befejezett
+}
+
+// ==============================================
+// 🧾 ACTIVITY - Aktivitás naplózás
+// ==============================================
+model Activity {
+  id          String   @id @default(cuid())
+  type        String
+  actorUserId String   @map("actor_user_id")
+  teamId      String?  @map("team_id")
+  projectId   String?  @map("project_id")
+  payload     Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor       User     @relation("UserActivities", fields: [actorUserId], references: [id])
+  team        Team?    @relation("TeamActivities", fields: [teamId], references: [id])
+  project     Project? @relation("ProjectActivities", fields: [projectId], references: [id])
+
+  @@index([createdAt])
+  @@index([teamId])
+  @@index([projectId])
+  @@map("activities")
 }

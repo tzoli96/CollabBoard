@@ -2,7 +2,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { KeycloakService } from '../keycloak/keycloak.service';
 import { UsersRepository } from '../database/repositories/users.repository';
-import { AuthenticatedUser } from './strategies/jwt.strategy';
+// Local AuthenticatedUser type aligned with SyncUserInterceptor enrichment
+export interface AuthenticatedUser {
+    id: string;
+    keycloakId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    roles: string[];
+    isActive: boolean;
+}
 
 @Injectable()
 export class AuthService {

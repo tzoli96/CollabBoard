@@ -1,12 +1,16 @@
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { SecurityModule } from './security/security.module';
+import { AuthGuard, RoleGuard } from 'nest-keycloak-connect';
+import { SyncUserInterceptor } from './auth/interceptors/sync-user.interceptor';
+import { TeamsModule } from './teams/teams.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
     imports: [
@@ -14,15 +18,17 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
             isGlobal: true,
         }),
         DatabaseModule,
+        SecurityModule,
         AuthModule,
+        TeamsModule,
+        ProjectsModule,
     ],
     controllers: [AppController],
     providers: [
         AppService,
-        {
-            provide: APP_GUARD,
-            useClass: JwtAuthGuard,
-        },
+        { provide: APP_GUARD, useClass: AuthGuard },
+        { provide: APP_GUARD, useClass: RoleGuard },
+        { provide: APP_INTERCEPTOR, useClass: SyncUserInterceptor },
     ],
 })
 export class AppModule {}

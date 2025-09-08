@@ -1,12 +1,11 @@
 
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { Roles } from './decorators/roles.decorator';
+import { Roles } from 'nest-keycloak-connect';
 import { Public } from './decorators/public.decorator';
-import type { AuthenticatedUser } from './strategies/jwt.strategy'; // ← import type használata
+import { Unprotected } from 'nest-keycloak-connect';
+import { ROLES } from './roles';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +15,7 @@ export class AuthController {
      * Public endpoint - no authentication required
      */
     @Public()
+    @Unprotected()
     @Get('health')
     async getAuthHealth() {
         const health = await this.authService.healthCheck();
@@ -30,9 +30,8 @@ export class AuthController {
     /**
      * Get current user info - requires authentication
      */
-    @UseGuards(JwtAuthGuard)
     @Get('me')
-    async getCurrentUser(@CurrentUser() user: AuthenticatedUser) {
+    async getCurrentUser(@CurrentUser() user: any) {
         return {
             message: 'User authenticated successfully',
             user: {
@@ -49,9 +48,8 @@ export class AuthController {
     /**
      * Get full user profile with teams - requires authentication
      */
-    @UseGuards(JwtAuthGuard)
     @Get('profile')
-    async getUserProfile(@CurrentUser() user: AuthenticatedUser) {
+    async getUserProfile(@CurrentUser() user: any) {
         const profile = await this.authService.getUserProfile(user);
 
         return {
@@ -63,10 +61,9 @@ export class AuthController {
     /**
      * Admin only endpoint - test role-based access
      */
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin')
+    @Roles({ roles: [ROLES.REALM_ADMIN] })
     @Get('admin')
-    async getAdminInfo(@CurrentUser() user: AuthenticatedUser) {
+    async getAdminInfo(@CurrentUser() user: any) {
         return {
             message: 'Admin access granted',
             user: {
@@ -85,9 +82,8 @@ export class AuthController {
     /**
      * Test endpoint for any authenticated user
      */
-    @UseGuards(JwtAuthGuard)
     @Post('test')
-    async testAuthentication(@CurrentUser() user: AuthenticatedUser) {
+    async testAuthentication(@CurrentUser() user: any) {
         return {
             message: 'Authentication test successful',
             timestamp: new Date().toISOString(),

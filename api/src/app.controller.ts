@@ -2,6 +2,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
+import { Unprotected } from 'nest-keycloak-connect';
 
 @Controller()
 export class AppController {
@@ -10,11 +11,13 @@ export class AppController {
         private readonly prisma: PrismaService, // ← Prisma inject
     ) {}
 
+    @Unprotected()
     @Get()
     getHello(): string {
         return this.appService.getHello();
     }
 
+    @Unprotected()
     @Get('health')
     async getHealth() {
         const dbHealthy = await this.prisma.healthCheck();

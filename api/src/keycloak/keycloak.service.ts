@@ -1,7 +1,6 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import jwksClient from 'jwks-rsa'; // ← Default import helyett
 
 export interface KeycloakUser {
     sub: string;
@@ -21,36 +20,15 @@ export interface KeycloakUser {
 @Injectable()
 export class KeycloakService {
     private readonly logger = new Logger(KeycloakService.name);
-    private readonly jwksClient: jwksClient.JwksClient;
     private readonly keycloakUrl: string;
     private readonly realm: string;
 
     constructor(private configService: ConfigService) {
-        // ← Non-null assertion vagy default értékek
         this.keycloakUrl = this.configService.get<string>('KEYCLOAK_URL') || 'http://keycloak:8080';
         this.realm = this.configService.get<string>('KEYCLOAK_REALM') || 'team-dashboard';
-
-        // ← Default import használata
-        this.jwksClient = jwksClient({
-            jwksUri: `${this.keycloakUrl}/realms/${this.realm}/protocol/openid-connect/certs`,
-            cache: true,
-            cacheMaxAge: 86400000,
-            rateLimit: true,
-            jwksRequestsPerMinute: 10,
-        });
-
         this.logger.log(`Keycloak service initialized for realm: ${this.realm}`);
     }
 
-    async getPublicKey(kid: string): Promise<string> {
-        try {
-            const key = await this.jwksClient.getSigningKey(kid);
-            return key.getPublicKey();
-        } catch (error) {
-            this.logger.error(`Failed to get public key for kid: ${kid}`, error);
-            throw new Error('Failed to retrieve JWT signing key');
-        }
-    }
 
     async getUserInfo(accessToken: string): Promise<KeycloakUser> {
         try {
@@ -89,7 +67,7 @@ export class KeycloakService {
             roles.push(...tokenPayload.resource_access[clientId].roles);
         }
 
-        return roles.filter(role => ['admin', 'member'].includes(role));
+        return roles.filter(role => ['admin', 'member', 'team-lead'].includes(role));
     }
 
     extractUserData(payload: any): {

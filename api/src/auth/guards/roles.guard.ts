@@ -1,6 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthenticatedUser } from '../strategies/jwt.strategy';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,7 +19,7 @@ export class RolesGuard implements CanActivate {
 
         // Get user from request
         const request = context.switchToHttp().getRequest();
-        const user: AuthenticatedUser = request.user;
+        const user = request.user as any;
 
         if (!user) {
             throw new ForbiddenException('User not authenticated');
