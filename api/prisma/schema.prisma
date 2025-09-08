@@ -1,0 +1,125 @@
+// ==============================================
+// 📊 MINIMÁLIS PRISMA SCHEMA - Üzleti igény alapján
+// ==============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==============================================
+// 👤 USER - Keycloak sync + alapvető adatok
+// ==============================================
+model User {
+  id         String   @id @default(cuid())
+  keycloakId String   @unique @map("keycloak_id")
+  email      String   @unique
+  firstName  String   @map("first_name")
+  lastName   String   @map("last_name")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  teamMemberships    TeamMember[]        @relation("UserTeams")
+  projectAssignments ProjectAssignment[] @relation("UserProjects")
+  createdTeams       Team[]              @relation("TeamCreator")
+  createdProjects    Project[]           @relation("ProjectCreator")
+
+  @@map("users")
+}
+
+// ==============================================
+// 🏢 TEAM - Csapat kezelés
+// ==============================================
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  creator  User         @relation("TeamCreator", fields: [createdBy], references: [id])
+  members  TeamMember[] @relation("TeamMembers")
+  projects Project[]    @relation("TeamProjects")
+
+  @@map("teams")
+}
+
+// ==============================================
+// 👥 TEAM MEMBER - Tagok hozzáadása csapatokhoz
+// ==============================================
+model TeamMember {
+  id       String   @id @default(cuid())
+  userId   String   @map("user_id")
+  teamId   String   @map("team_id")
+  role     Role     @default(MEMBER)
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  // Relations
+  user User @relation("UserTeams", fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation("TeamMembers", fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@map("team_members")
+}
+
+// ==============================================
+// 📋 PROJECT - Projektek
+// ==============================================
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  teamId      String   @map("team_id")
+  status      Status   @default(ACTIVE)
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  team        Team                @relation("TeamProjects", fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User                @relation("ProjectCreator", fields: [createdBy], references: [id])
+  assignments ProjectAssignment[] @relation("ProjectAssignments")
+
+  @@map("projects")
+}
+
+// ==============================================
+// 📝 PROJECT ASSIGNMENT - Projektekhez rendelés
+// ==============================================
+model ProjectAssignment {
+  id         String   @id @default(cuid())
+  projectId  String   @map("project_id")
+  userId     String   @map("user_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  // Relations
+  project Project @relation("ProjectAssignments", fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserProjects", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_assignments")
+}
+
+// ==============================================
+// 🔑 ENUMS - Minimális role és status
+// ==============================================
+
+// Role-based UI: admin vs member
+enum Role {
+  ADMIN // Minden jogosultság
+  MEMBER // Alapvető jogosultság
+}
+
+// Project status egyszerűen
+enum Status {
+  ACTIVE // Aktív
+  COMPLETED // Befejezett
+}

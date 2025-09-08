@@ -1,0 +1,137 @@
+name: collab-board
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./.docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    networks:
+      - collabboardnet
+
+  keycloak:
+    image: bitnami/keycloak:24
+    container_name: keycloak
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      # Admin user létrehozása
+      KEYCLOAK_CREATE_ADMIN_USER: "true"
+      KEYCLOAK_ADMIN_USER: "${KEYCLOAK_ADMIN_USER:-admin}"
+      KEYCLOAK_ADMIN_PASSWORD: "${KEYCLOAK_ADMIN_PASSWORD}"
+
+      # Database konfiguráció
+      KEYCLOAK_DATABASE_VENDOR: "postgresql"
+      KEYCLOAK_DATABASE_HOST: "db"
+      KEYCLOAK_DATABASE_PORT: "5432"
+      KEYCLOAK_DATABASE_NAME: "${KEYCLOAK_DATABASE_NAME:-keycloak}"
+      KEYCLOAK_DATABASE_USER: "${POSTGRES_USER}"
+      KEYCLOAK_DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+
+      # HTTP konfiguráció
+      KEYCLOAK_HTTP_PORT: "8080"
+      KEYCLOAK_HOSTNAME: "localhost"
+      KEYCLOAK_ENABLE_STATISTICS: "true"
+      KEYCLOAK_ENABLE_HEALTH_ENDPOINTS: "true"
+
+      KEYCLOAK_EXTRA_ARGS: "--import-realm"
+
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/bitnami/keycloak/data/import/realm-export.json:ro
+
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - collabboardnet
+
+  api:
+    build:
+      context: ./api
+      dockerfile: api.Dockerfile
+    container_name: api
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+      - ./api/.env
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT}/${POSTGRES_DB}?schema=public"
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+    ports:
+      - "${API_PORT:-3001}:3001"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    networks:
+      - collabboardnet
+
+  web:
+    build:
+      context: ./web
+      dockerfile: web.Dockerfile
+      target: development
+    container_name: web
+    depends_on:
+      api:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+      - web/.env
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - collabboardnet
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    networks:
+      - collabboardnet
+
+volumes:
+  db_data:
+
+networks:
+  collabboardnet:
+    driver: bridge

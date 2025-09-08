@@ -1,0 +1,152 @@
+{
+  "realm": "team-dashboard",
+  "enabled": true,
+  "displayName": "Team Dashboard",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "accessTokenLifespan": 900,
+  "refreshTokenMaxReuse": 0,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Full system administrator",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "team-lead",
+        "description": "Team leader - can manage own team and projects",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "member",
+        "description": "Team member - basic access",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "team-dashboard-backend",
+      "name": "Backend API",
+      "enabled": true,
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "secret": "team-dashboard-backend-secret",
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "team-dashboard-frontend",
+      "name": "Frontend SPA",
+      "enabled": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "secret": "team-dashboard-frontend-secret",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@teamdashboard.com",
+      "attributes": {
+        "department": ["IT"],
+        "position": ["System Administrator"],
+        "access_level": ["full"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "teamlead1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "TeamLead",
+      "email": "teamlead1@teamdashboard.com",
+      "attributes": {
+        "department": ["Development"],
+        "position": ["Team Lead"],
+        "team_id": ["dev-team-1"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "teamlead123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["team-lead"]
+    },
+    {
+      "username": "member1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@teamdashboard.com",
+      "attributes": {
+        "department": ["Development"],
+        "position": ["Senior Developer"],
+        "team_id": ["dev-team-1"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "member123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["member"]
+    },
+    {
+      "username": "member2",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@teamdashboard.com",
+      "attributes": {
+        "department": ["Design"],
+        "position": ["UX Designer"]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "member123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["member"]
+    }
+  ]
+}
