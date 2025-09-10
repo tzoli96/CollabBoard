@@ -13,17 +13,27 @@ WORKDIR /app
 ########################################
 FROM base AS development
 ENV NODE_ENV=development
+
+# 1) /app tulajdon átadása még az install előtt
+USER root
+RUN mkdir -p /app && chown -R node:node /app /home/node
+
+# 2) PNPM store a user home-ban (nem /app alatt)
+ENV PNPM_STORE_DIR=/home/node/.pnpm-store
+
+# 3) Innentől node user telepít és futtat
+USER node
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+# 4) Manifestek bemásolása node tulajdonban
+COPY --chown=node:node package.json pnpm-lock.yaml ./
+
+# 5) Install: cache mount a store-ra mutasson (írható a node usernek)
+RUN --mount=type=cache,id=pnpm-store,target=/home/node/.pnpm-store \
     pnpm install --frozen-lockfile
 
-COPY . .
-
-RUN chown -R node:node /app
-
-USER node
+# 6) Forrás bemásolása
+COPY --chown=node:node . .
 
 EXPOSE 3000
 CMD ["pnpm", "dev"]
