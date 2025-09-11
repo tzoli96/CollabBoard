@@ -18,5 +18,5 @@ export const useAuthProfile = () => {
 
 export const useAdminCheck = () => {
     const { hasRole } = useAuth()
-    return hasRole('realm-admin')
+    return hasRole('admin')
 }

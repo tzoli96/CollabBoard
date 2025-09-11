@@ -41,7 +41,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     const deleteProjectMutation = useDeleteProject()
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-    const canManageProject = hasAnyRole(['realm-admin', 'realm-team-lead'])
+    const canManageProject = hasAnyRole(['admin', 'team-lead'])
 
     const handleDelete = async () => {
         try {
@@ -91,7 +91,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                         </div>
 
                         <RoleGuard
-                            roles={['realm-admin', 'realm-team-lead']}
+                            roles={['admin', 'team-lead']}
                             fallback={null}
                         >
                             <DropdownMenu>

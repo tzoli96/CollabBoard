@@ -39,7 +39,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     const { data: project, isLoading, error } = useProject(projectId)
     const { hasAnyRole } = useAuth()
 
-    const canManageProject = hasAnyRole(['realm-admin', 'realm-team-lead'])
+    const canManageProject = hasAnyRole(['admin', 'team-lead'])
 
     if (isLoading) {
         return (
@@ -99,7 +99,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                 description={project.description || 'Projekt részletek és állapot követés'}
             >
                 <div className="flex items-center space-x-2">
-                    <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                    <RoleGuard roles={['admin', 'team-lead']}>
                         <Button>
                             <Edit className="mr-2 h-4 w-4" />
                             Szerkesztés
@@ -323,7 +323,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                     </Card>
 
                     {/* Quick actions */}
-                    <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                    <RoleGuard roles={['admin', 'team-lead']}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Gyors műveletek</CardTitle>

@@ -34,7 +34,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
     const { data: team, isLoading, error } = useTeam(teamId)
     const { hasAnyRole } = useAuth()
 
-    const canManageTeam = hasAnyRole(['realm-admin', 'realm-team-lead'])
+    const canManageTeam = hasAnyRole(['admin', 'team-lead'])
 
     if (isLoading) {
         return (
@@ -66,7 +66,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
                 description={team.description || 'Csapat részletek és tagok kezelése'}
             >
                 <div className="flex items-center space-x-2">
-                    <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                    <RoleGuard roles={['admin', 'team-lead']}>
                         <Button asChild variant="outline">
                             <Link href={ROUTES.TEAM_MEMBERS(teamId)}>
                                 <UserPlus className="mr-2 h-4 w-4" />
@@ -155,7 +155,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
                                     <p className="mt-1 text-sm text-muted-foreground">
                                         Kezdj el tagokat hozzáadni ehhez a csapathoz.
                                     </p>
-                                    <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                                    <RoleGuard roles={['admin', 'team-lead']}>
                                         <Button asChild className="mt-4" size="sm">
                                             <Link href={ROUTES.TEAM_MEMBERS(teamId)}>
                                                 <UserPlus className="mr-2 h-4 w-4" />
@@ -285,7 +285,7 @@ export default function TeamDetailPage({ params }: TeamDetailPageProps) {
                     </Card>
 
                     {/* Quick actions */}
-                    <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                    <RoleGuard roles={['admin', 'team-lead']}>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Gyors műveletek</CardTitle>

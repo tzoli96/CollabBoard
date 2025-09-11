@@ -40,7 +40,7 @@ export function TeamCard({ team }: TeamCardProps) {
     const deleteTeamMutation = useDeleteTeam()
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-    const canManageTeam = hasAnyRole(['realm-admin', 'realm-team-lead'])
+    const canManageTeam = hasAnyRole(['admin', 'team-lead'])
 
     const handleDelete = async () => {
         try {
@@ -77,7 +77,7 @@ export function TeamCard({ team }: TeamCardProps) {
                         </div>
 
                         <RoleGuard
-                            roles={['realm-admin', 'realm-team-lead']}
+                            roles={['admin', 'team-lead']}
                             fallback={null}
                         >
                             <DropdownMenu>

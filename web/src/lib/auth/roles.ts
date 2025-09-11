@@ -1,6 +1,6 @@
 export const ROLES = {
-    REALM_ADMIN: 'realm-admin',
-    REALM_TEAM_LEAD: 'realm-team-lead',
+    REALM_ADMIN: 'admin',
+    REALM_TEAM_LEAD: 'team-lead',
     TEAM_MEMBER: 'member',
     TEAM_LEAD: 'lead',
 } as const

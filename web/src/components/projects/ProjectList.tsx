@@ -38,7 +38,7 @@ export function ProjectList() {
     const [teamFilter, setTeamFilter] = useState<string>('all')
 
     const debouncedSearch = useDebounce(searchTerm, 300)
-    const canCreateProject = hasAnyRole(['realm-admin', 'realm-team-lead'])
+    const canCreateProject = hasAnyRole(['admin', 'team-lead'])
 
     const filteredProjects = projects?.filter(project => {
         const matchesSearch =
@@ -86,7 +86,7 @@ export function ProjectList() {
                 title="Projektek"
                 description="Projekt kezelés és nyomon követés"
             >
-                <RoleGuard roles={['realm-admin', 'realm-team-lead']}>
+                <RoleGuard roles={['admin', 'team-lead']}>
                     <Button onClick={() => setCreateDialogOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Új projekt

@@ -56,7 +56,7 @@ const navItems: NavItem[] = [
         title: 'Jelentések',
         href: '/reports',
         icon: BarChart3,
-        roles: ['realm-admin', 'realm-team-lead'],
+        roles: ['admin', 'team-lead'],
     },
     {
         title: 'Beállítások',
