@@ -26,7 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const init = async () => {
             try {
+                console.log('AuthProvider: Starting Keycloak initialization...')
+
                 const authenticated = await initKeycloak()
+
+                console.log('AuthProvider: Keycloak initialization result:', authenticated)
                 setIsAuthenticated(authenticated)
 
                 if (authenticated && keycloak.tokenParsed) {
@@ -39,16 +43,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         lastName: tokenData.family_name,
                         roles: keycloak.realmAccess?.roles || [],
                     })
+                    console.log('AuthProvider: User authenticated successfully')
+                } else {
+                    console.log('AuthProvider: User not authenticated')
+                    setUser(null)
                 }
             } catch (error) {
-                console.error('Auth initialization failed:', error)
+                console.error('AuthProvider: Initialization failed:', error)
+                setIsAuthenticated(false)
+                setUser(null)
             } finally {
+                console.log('AuthProvider: Setting loading to false')
                 setIsLoading(false)
             }
         }
 
         init()
-    }, [])
+    }, []) // Nincs dependency array, csak egyszer fut le
 
     const value: AuthContextType = {
         isAuthenticated,

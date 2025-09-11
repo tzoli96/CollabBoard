@@ -18,6 +18,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
     useEffect(() => {
         // Redirect to login if not authenticated after loading
         if (!isLoading && !isAuthenticated) {
+            console.log('Redirecting to login...')
             // Optionally auto-redirect to login
             // login()
         }

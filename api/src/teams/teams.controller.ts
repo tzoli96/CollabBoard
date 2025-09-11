@@ -12,6 +12,7 @@ export class TeamsController {
   constructor(private readonly teams: TeamsService) {}
 
   @Get()
+  @Roles({ roles: [ROLES.REALM_ADMIN, ROLES.REALM_MEMBER, ROLES.REALM_TEAM_LEAD] })
   list() {
     return this.teams.list();
   }

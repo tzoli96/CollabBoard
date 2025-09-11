@@ -45,7 +45,7 @@ services:
 
       # HTTP konfiguráció
       KEYCLOAK_HTTP_PORT: "8080"
-      KEYCLOAK_HOSTNAME: "keycloak"
+      KEYCLOAK_HOSTNAME: "localhost"
       KEYCLOAK_ENABLE_STATISTICS: "true"
       KEYCLOAK_ENABLE_HEALTH_ENDPOINTS: "true"
 
@@ -80,7 +80,7 @@ services:
       - ./api/.env
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT}/${POSTGRES_DB}?schema=public"
-      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_URL: "http://localhost:8080"
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}

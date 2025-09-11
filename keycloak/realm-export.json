@@ -37,28 +37,14 @@
   },
   "clients": [
     {
-      "clientId": "team-dashboard-backend",
-      "name": "Backend API",
-      "enabled": true,
-      "bearerOnly": true,
-      "standardFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": true,
-      "publicClient": false,
-      "protocol": "openid-connect",
-      "secret": "team-dashboard-backend-secret",
-      "fullScopeAllowed": true
-    },
-    {
       "clientId": "team-dashboard-frontend",
-      "name": "Frontend SPA",
+      "name": "Frontend",
       "enabled": true,
       "bearerOnly": false,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "publicClient": false,
+      "publicClient": true,
       "protocol": "openid-connect",
-      "secret": "team-dashboard-frontend-secret",
       "redirectUris": ["http://localhost:3000/*"],
       "webOrigins": ["http://localhost:3000"],
       "fullScopeAllowed": true

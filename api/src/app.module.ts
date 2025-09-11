@@ -11,6 +11,7 @@ import { AuthGuard, RoleGuard } from 'nest-keycloak-connect';
 import { SyncUserInterceptor } from './auth/interceptors/sync-user.interceptor';
 import { TeamsModule } from './teams/teams.module';
 import { ProjectsModule } from './projects/projects.module';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
     imports: [
@@ -29,6 +30,7 @@ import { ProjectsModule } from './projects/projects.module';
         { provide: APP_GUARD, useClass: AuthGuard },
         { provide: APP_GUARD, useClass: RoleGuard },
         { provide: APP_INTERCEPTOR, useClass: SyncUserInterceptor },
+        { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     ],
 })
 export class AppModule {}
