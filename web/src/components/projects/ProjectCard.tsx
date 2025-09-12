@@ -132,10 +132,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
                         <div className="flex items-center space-x-2">
                             <Avatar className="h-6 w-6">
                                 <AvatarFallback className="text-xs">
-                                    {project.teamName.charAt(0).toUpperCase()}
+                                    {project.team?.name.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm font-medium">{project.teamName}</span>
+                            <span className="text-sm font-medium">{project.team.name}</span>
                         </div>
                     </div>
 

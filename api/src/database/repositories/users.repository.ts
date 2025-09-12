@@ -96,14 +96,18 @@ export class UsersRepository extends BaseRepository {
         email: string;
         firstName: string;
         lastName: string;
+        roles: string[]; // ✨ ÚJ: Keycloak role-ok
     }): Promise<User> {
         try {
+            // Email alapú upsert használata a keycloak_id helyett
             const user = await this.prisma.user.upsert({
-                where: { keycloakId: keycloakData.keycloakId },
+                where: { email: keycloakData.email },
                 update: {
-                    email: keycloakData.email,
+                    keycloakId: keycloakData.keycloakId,
                     firstName: keycloakData.firstName,
                     lastName: keycloakData.lastName,
+                    roles: keycloakData.roles, // ✨ Role-ok mentése
+                    rolesUpdatedAt: new Date(), // ✨ Szinkronizáció időpontja
                     updatedAt: new Date(),
                 },
                 create: {
@@ -111,11 +115,13 @@ export class UsersRepository extends BaseRepository {
                     email: keycloakData.email,
                     firstName: keycloakData.firstName,
                     lastName: keycloakData.lastName,
+                    roles: keycloakData.roles, // ✨ Role-ok mentése
+                    rolesUpdatedAt: new Date(), // ✨ Szinkronizáció időpontja
                     isActive: true,
                 },
             });
 
-            this.logger.log(`User synced from Keycloak: ${user.email}`);
+            this.logger.log(`User synced from Keycloak: ${user.email} with roles: ${keycloakData.roles.join(', ')}`);
             return user;
         } catch (error) {
             this.handleError(error, 'syncFromKeycloak');

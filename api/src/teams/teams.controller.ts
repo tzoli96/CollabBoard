@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { CreateTeamDto, UpdateTeamDto, AddMemberDto, UpdateMemberRoleDto } from './dto/team.dtos';
+import { CreateTeamDto, UpdateTeamDto, AddMemberDto } from './dto/team.dtos';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from 'nest-keycloak-connect';
-import { ROLES } from '../auth/roles';
+import { KEYCLOAK_ROLES } from '../auth/roles';
 import { TeamMembershipGuard } from './guards/team-membership.guard';
 import { TeamRoleGuard } from './guards/team-role.guard';
 
@@ -12,7 +12,7 @@ export class TeamsController {
   constructor(private readonly teams: TeamsService) {}
 
   @Get()
-  @Roles({ roles: [ROLES.REALM_ADMIN, ROLES.REALM_MEMBER, ROLES.REALM_TEAM_LEAD] })
+  @Roles({ roles: [KEYCLOAK_ROLES.REALM_ADMIN, KEYCLOAK_ROLES.REALM_MEMBER, KEYCLOAK_ROLES.REALM_TEAM_LEAD] })
   list() {
     return this.teams.list();
   }
@@ -24,7 +24,7 @@ export class TeamsController {
   }
 
   @Post()
-  @Roles({ roles: [ROLES.REALM_ADMIN, ROLES.REALM_TEAM_LEAD] })
+  @Roles({ roles: [KEYCLOAK_ROLES.REALM_ADMIN, KEYCLOAK_ROLES.REALM_TEAM_LEAD] })
   create(@CurrentUser('id') userId: string, @Body() dto: CreateTeamDto) {
     return this.teams.create(userId, dto);
   }
@@ -53,15 +53,16 @@ export class TeamsController {
     return this.teams.addMember(userId, teamId, dto);
   }
 
-  @Patch(':teamId/members/:userId')
-  @UseGuards(TeamRoleGuard)
-  updateMember(@CurrentUser('id') userId: string, @Param('teamId') teamId: string, @Param('userId') memberId: string, @Body() dto: UpdateMemberRoleDto) {
-    return this.teams.updateMemberRole(userId, teamId, memberId, dto);
-  }
 
   @Delete(':teamId/members/:userId')
   @UseGuards(TeamRoleGuard)
   removeMember(@CurrentUser('id') userId: string, @Param('teamId') teamId: string, @Param('userId') memberId: string) {
     return this.teams.removeMember(userId, teamId, memberId);
+  }
+
+  @Get(':teamId/available-users')
+  @UseGuards(TeamMembershipGuard)
+  getAvailableUsers(@Param('teamId') teamId: string) {
+    return this.teams.getAvailableUsers(teamId);
   }
 }

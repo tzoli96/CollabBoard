@@ -7,7 +7,15 @@ export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
   list(teamId?: string) {
-    return this.prisma.project.findMany({ where: { teamId: teamId || undefined }, orderBy: { createdAt: 'desc' } });
+      return this.prisma.project.findMany({
+          where: { teamId: teamId || undefined },
+          include: {
+              team: {
+                  select: { name: true }
+              }
+          },
+          orderBy: { createdAt: 'desc' }
+      });
   }
 
   getById(projectId: string) {

@@ -11,8 +11,6 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 RUN apk add --no-cache curl bash openssl
 
-ENV PNPM_STORE_DIR=/pnpm-store
-
 WORKDIR /app
 
 RUN mkdir -p /pnpm-store && chown -R node:node /pnpm-store /app
@@ -27,10 +25,13 @@ WORKDIR /app
 
 USER node
 
+RUN pnpm config set store-dir /pnpm-store
+
 COPY --chown=node:node package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store \
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store,uid=1000,gid=1000 \
+    rm -rf node_modules && \
     pnpm install --frozen-lockfile
 
 COPY --chown=node:node . .
 
-CMD ["sh", "-lc", "pnpm prisma generate && pnpm prisma db push && pnpm run start:dev"]
+CMD ["sh", "-lc", "pnpm prisma generate && pnpm prisma db push && pnpm run db:sync && pnpm run start:dev"]

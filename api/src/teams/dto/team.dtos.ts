@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsIn } from 'class-validator';
 import { Role } from '@prisma/client';
 
 export class CreateTeamDto {
@@ -25,13 +25,7 @@ export class AddMemberDto {
   @IsString()
   @IsNotEmpty()
   userId!: string;
-
-  @IsEnum(Role)
+  @IsIn(['admin', 'team-lead', 'member'])
   @IsOptional()
   role?: Role;
-}
-
-export class UpdateMemberRoleDto {
-  @IsEnum(Role)
-  role!: Role;
 }

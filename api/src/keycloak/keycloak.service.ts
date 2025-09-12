@@ -94,6 +94,105 @@ export class KeycloakService {
         return this.hasRole(roles, 'admin');
     }
 
+    /**
+     * Admin token lekérése service account-tal - role assignment-hez
+     */
+    private async getAdminToken(): Promise<string | null> {
+        try {
+            const clientId = this.configService.get<string>('KEYCLOAK_CLIENT_ID');
+            const clientSecret = this.configService.get<string>('KEYCLOAK_CLIENT_SECRET');
+            
+            if (!clientId || !clientSecret) {
+                this.logger.warn('Missing Keycloak client credentials for admin operations');
+                return null;
+            }
+
+            const response = await fetch(
+                `${this.keycloakUrl}/realms/${this.realm}/protocol/openid-connect/token`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'client_credentials',
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                this.logger.error(`Failed to get admin token: ${response.status}`);
+                return null;
+            }
+
+            const tokenData = await response.json();
+            return tokenData.access_token;
+        } catch (error) {
+            this.logger.error('Error getting admin token:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Assign role to user in Keycloak
+     */
+    async assignRoleToUser(keycloakId: string, roleName: string): Promise<boolean> {
+        try {
+            const adminToken = await this.getAdminToken();
+            if (!adminToken) {
+                this.logger.warn(`No admin token available for role assignment`);
+                return false;
+            }
+
+            // First get the role ID
+            const roleResponse = await fetch(
+                `${this.keycloakUrl}/admin/realms/${this.realm}/roles/${roleName}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (!roleResponse.ok) {
+                this.logger.warn(`Failed to fetch role ${roleName}: ${roleResponse.status}`);
+                return false;
+            }
+
+            const role = await roleResponse.json();
+
+            // Assign the role to the user
+            const assignResponse = await fetch(
+                `${this.keycloakUrl}/admin/realms/${this.realm}/users/${keycloakId}/role-mappings/realm`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify([{
+                        id: role.id,
+                        name: role.name
+                    }])
+                }
+            );
+
+            if (!assignResponse.ok) {
+                this.logger.warn(`Failed to assign role ${roleName} to user ${keycloakId}: ${assignResponse.status}`);
+                return false;
+            }
+
+            this.logger.log(`Successfully assigned role ${roleName} to user ${keycloakId}`);
+            return true;
+        } catch (error) {
+            this.logger.error(`Error assigning role ${roleName} to user ${keycloakId}:`, error);
+            return false;
+        }
+    }
+
     async healthCheck(): Promise<boolean> {
         try {
             const response = await fetch(

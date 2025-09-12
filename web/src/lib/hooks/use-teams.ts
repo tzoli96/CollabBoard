@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { teamsApi } from '../api/teams'
 import {
     Team,
+    User,
     CreateTeamRequest,
     UpdateTeamRequest,
     AddMemberRequest,
@@ -28,6 +29,14 @@ export const useTeamMembers = (teamId: string) => {
     return useQuery({
         queryKey: ['teams', teamId, 'members'],
         queryFn: () => teamsApi.getMembers(teamId),
+        enabled: !!teamId,
+    })
+}
+
+export const useAvailableUsers = (teamId: string) => {
+    return useQuery<User[]>({
+        queryKey: ['teams', teamId, 'available-users'],
+        queryFn: () => teamsApi.getAvailableUsers(teamId),
         enabled: !!teamId,
     })
 }

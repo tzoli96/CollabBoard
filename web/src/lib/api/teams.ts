@@ -2,6 +2,7 @@ import { apiClient } from './client'
 import {
     Team,
     TeamMember,
+    User,
     CreateTeamRequest,
     UpdateTeamRequest,
     AddMemberRequest,
@@ -25,7 +26,7 @@ export const teamsApi = {
         apiClient.delete(`/teams/${teamId}`),
 
     getMembers: (teamId: string): Promise<TeamMember[]> =>
-        apiClient.get(`/teams/${teamId}/members`),
+        apiClient.get(`/teams/${teamId}/members`).then(response => response.members),
 
     addMember: (teamId: string, data: AddMemberRequest): Promise<TeamMember> =>
         apiClient.post(`/teams/${teamId}/members`, data),
@@ -39,4 +40,7 @@ export const teamsApi = {
 
     removeMember: (teamId: string, userId: string): Promise<void> =>
         apiClient.delete(`/teams/${teamId}/members/${userId}`),
+
+    getAvailableUsers: (teamId: string): Promise<User[]> =>
+        apiClient.get(`/teams/${teamId}/available-users`),
 }

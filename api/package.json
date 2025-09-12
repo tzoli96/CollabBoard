@@ -17,7 +17,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:sync": "tsx scripts/sync-keycloak-users.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset && npm run db:sync"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -25,12 +28,13 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.15.0",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "keycloak-connect": "^24.0.5",
     "nest-keycloak-connect": "1.10.1",
-    "class-validator": "^0.14.1",
-    "class-transformer": "^0.5.1"
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -59,7 +63,11 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": ".",
     "testMatch": [
       "<rootDir>/src/**/*.spec.ts",

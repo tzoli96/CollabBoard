@@ -26,6 +26,7 @@ export class SyncUserInterceptor implements NestInterceptor {
       email: data.email,
       firstName: data.firstName,
       lastName: data.lastName,
+      roles: data.roles, // ✨ Role-ok átadása a szinkronizációhoz
     })).pipe(
       switchMap((user) => {
         // Enrich request.user so CurrentUser decorator still works with DB fields
@@ -35,7 +36,7 @@ export class SyncUserInterceptor implements NestInterceptor {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          roles: data.roles,
+          roles: user.roles, // ✨ DB-ből származó role-ok használata
           isActive: true,
         };
         return next.handle();

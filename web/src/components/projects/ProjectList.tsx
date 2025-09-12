@@ -44,7 +44,7 @@ export function ProjectList() {
         const matchesSearch =
             project.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
             project.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            project.teamName.toLowerCase().includes(debouncedSearch.toLowerCase())
+            project.team.name.toLowerCase().includes(debouncedSearch.toLowerCase())
 
         const matchesStatus = statusFilter === 'all' || project.status === statusFilter
         const matchesTeam = teamFilter === 'all' || project.teamId === teamFilter

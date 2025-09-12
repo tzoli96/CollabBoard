@@ -152,11 +152,11 @@ export function TeamCard({ team }: TeamCardProps) {
                                 <div className="flex -space-x-2">
                                     {memberPreviews.map((member) => (
                                         <Avatar key={member.id} className="h-8 w-8 border-2 border-background">
-                                            <AvatarImage src="" alt={member.username} />
+                                            <AvatarImage src="" alt={`${member.user.firstName} ${member.user.lastName}`} />
                                             <AvatarFallback className="text-xs">
-                                                {member.firstName && member.lastName
-                                                    ? `${member.firstName.charAt(0)}${member.lastName.charAt(0)}`
-                                                    : member.username.charAt(0).toUpperCase()
+                                                {member.user.firstName && member.user.lastName
+                                                    ? `${member.user.firstName.charAt(0)}${member.user.lastName.charAt(0)}`
+                                                    : member.user.email?.charAt(0)?.toUpperCase() || '?'
                                                 }
                                             </AvatarFallback>
                                         </Avatar>

@@ -3,7 +3,9 @@ export interface Project {
     title: string
     description?: string
     teamId: string
-    teamName: string
+    team?: {
+        name: string
+    }
     status: ProjectStatus
     createdAt: string
     updatedAt: string

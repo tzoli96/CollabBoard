@@ -20,6 +20,11 @@ model User {
   email      String   @unique
   firstName  String   @map("first_name")
   lastName   String   @map("last_name")
+  
+  // ✨ Keycloak role-ok tárolása az adatbázisban
+  roles      String[] @default(["member"]) // Keycloak roles array
+  rolesUpdatedAt DateTime? @map("roles_updated_at") // Utolsó szinkronizáció ideje
+  
   isActive   Boolean  @default(true) @map("is_active")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
@@ -55,13 +60,12 @@ model Team {
 }
 
 // ==============================================
-// 👥 TEAM MEMBER - Tagok hozzáadása csapatokhoz
+// 👥 TEAM MEMBER - Tagok hozzáadása csapatokhoz (role Keycloak-ból)
 // ==============================================
 model TeamMember {
   id       String   @id @default(cuid())
   userId   String   @map("user_id")
   teamId   String   @map("team_id")
-  role     Role     @default(MEMBER)
   joinedAt DateTime @default(now()) @map("joined_at")
 
   // Relations
@@ -117,8 +121,9 @@ model ProjectAssignment {
 
 // Role-based UI: admin vs member
 enum Role {
-  ADMIN // Minden jogosultság
-  MEMBER // Alapvető jogosultság
+  ADMIN
+  TEAM_LEAD
+  MEMBER
 }
 
 // Project status egyszerűen

@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TeamsService } from './teams.service';
 import { TeamsController } from './teams.controller';
 import { DatabaseModule } from '../database/database.module';
 import { TeamMembershipGuard } from './guards/team-membership.guard';
 import { TeamRoleGuard } from './guards/team-role.guard';
+import { KeycloakService } from '../keycloak/keycloak.service';
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [TeamsService, TeamMembershipGuard, TeamRoleGuard],
+  imports: [DatabaseModule, ConfigModule],
+  providers: [TeamsService, TeamMembershipGuard, TeamRoleGuard, KeycloakService],
   controllers: [TeamsController],
   exports: [TeamsService],
 })

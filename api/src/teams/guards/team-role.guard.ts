@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { Role } from '@prisma/client';
+import { ROLES } from '../../auth/roles';
 
 @Injectable()
 export class TeamRoleGuard implements CanActivate {
@@ -14,17 +14,21 @@ export class TeamRoleGuard implements CanActivate {
     if (!user) throw new ForbiddenException('User not authenticated');
     if (!teamId) throw new ForbiddenException('teamId is required');
 
-    // realm admin or team-lead bypass
-    if (user.roles?.includes('admin') || user.roles?.includes('team-lead')) return true;
+    // Keycloak realm jogosultságok ellenőrzése
+    if (user.roles?.includes(ROLES.ADMIN) || 
+        user.roles?.includes(ROLES.TEAM_LEAD)) {
+      return true;
+    }
 
+    // Team tagság ellenőrzése (jogosultságok Keycloak-ban vannak)
     const membership = await this.prisma.teamMember.findFirst({
       where: { teamId, userId: user.id },
     });
 
-    if (!membership) throw new ForbiddenException('Not a member of this team');
+    if (!membership) {
+      throw new ForbiddenException('Not a member of this team');
+    }
 
-    if (membership.role === Role.ADMIN) return true;
-
-    throw new ForbiddenException('Insufficient team role');
+    return true;
   }
 }

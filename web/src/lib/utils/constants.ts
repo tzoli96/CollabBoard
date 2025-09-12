@@ -35,6 +35,6 @@ export const PROJECT_STATUS_COLORS = {
 
 export const TEAM_ROLE_COLORS = {
     member: 'bg-blue-100 text-blue-800',
-    lead: 'bg-purple-100 text-purple-800',
+    "team-lead": 'bg-purple-100 text-purple-800',
     admin: 'bg-red-100 text-red-800',
 } as const

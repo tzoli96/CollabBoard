@@ -14,13 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import {
-    User,
-    Settings,
-    LogOut,
-    Shield,
-    CreditCard,
-    Bell,
-    HelpCircle
+    LogOut
 } from 'lucide-react'
 import { formatTeamRole } from '@/lib/utils/formatters'
 
@@ -45,8 +39,8 @@ export function UserMenu() {
         ? `${user.firstName} ${user.lastName}`
         : user.username
 
-    const isAdmin = hasRole('realm-admin')
-    const isTeamLead = hasRole('realm-team-lead')
+    const isAdmin = hasRole('admin')
+    const isTeamLead = hasRole('team-lead')
 
     return (
         <DropdownMenu>
@@ -96,45 +90,6 @@ export function UserMenu() {
                         </div>
                     </div>
                 </DropdownMenuLabel>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profil</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Beállítások</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Bell className="mr-2 h-4 w-4" />
-                        <span>Értesítések</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        <span>Számlázás</span>
-                    </DropdownMenuItem>
-                    {isAdmin && (
-                        <DropdownMenuItem>
-                            <Shield className="mr-2 h-4 w-4" />
-                            <span>Admin Panel</span>
-                        </DropdownMenuItem>
-                    )}
-                </DropdownMenuGroup>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem>
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    <span>Súgó</span>
-                </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 

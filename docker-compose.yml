@@ -88,7 +88,6 @@ services:
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_ISSUER: http://localhost:8080/realms/team-dashboard
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
-      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     ports:
       - "${API_PORT:-3001}:3001"
     volumes:

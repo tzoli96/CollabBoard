@@ -186,7 +186,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                             <div className="flex items-center space-x-3">
                                 <Avatar className="h-10 w-10">
                                     <AvatarFallback>
-                                        {project.teamName.charAt(0).toUpperCase()}
+                                        {project.team.name.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
@@ -195,7 +195,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                                             href={ROUTES.TEAM_DETAIL(project.teamId)}
                                             className="hover:underline"
                                         >
-                                            {project.teamName}
+                                            {project.team.name}
                                         </Link>
                                     </h3>
                                     <p className="text-sm text-muted-foreground">
@@ -278,7 +278,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
                                     href={ROUTES.TEAM_DETAIL(project.teamId)}
                                     className="text-sm text-blue-600 hover:underline"
                                 >
-                                    {project.teamName}
+                                    {project.team.name}
                                 </Link>
                             </div>
 

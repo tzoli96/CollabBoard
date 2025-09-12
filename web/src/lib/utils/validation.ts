@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { TeamRole } from '@/types/team'
 
 export const createTeamSchema = z.object({
     name: z.string().min(2, 'A csapat nevének legalább 2 karakter hosszúnak kell lennie'),
@@ -26,5 +27,5 @@ export const updateProjectSchema = z.object({
 
 export const addMemberSchema = z.object({
     userId: z.string().min(1, 'Felhasználó kiválasztása kötelező'),
-    role: z.enum(['member', 'lead']),
+    role: z.enum([TeamRole.admin, TeamRole["team-lead"], TeamRole.member]).optional(),
 })

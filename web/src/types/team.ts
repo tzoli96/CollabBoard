@@ -8,15 +8,24 @@ export interface Team {
     projectCount: number
 }
 
+export interface User {
+    id: string
+    keycloakId: string
+    email: string
+    firstName: string
+    lastName: string
+    isActive: boolean
+    createdAt: string
+    updatedAt: string
+}
+
 export interface TeamMember {
     id: string
     userId: string
-    username: string
-    email: string
-    firstName?: string
-    lastName?: string
+    teamId: string
     role: TeamRole
     joinedAt: string
+    user: User
 }
 
 export interface CreateTeamRequest {
@@ -31,14 +40,11 @@ export interface UpdateTeamRequest {
 
 export interface AddMemberRequest {
     userId: string
-    role: TeamRole
-}
-
-export interface UpdateMemberRoleRequest {
-    role: TeamRole
+    role?: TeamRole
 }
 
 export enum TeamRole {
-    MEMBER = 'member',
-    LEAD = 'lead'
+    member = 'member',
+    "team-lead" = 'team-lead',
+    admin = 'admin'
 }

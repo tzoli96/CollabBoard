@@ -7,11 +7,7 @@ import { useAuth } from '@/lib/auth/providers'
 import {
     LayoutDashboard,
     Users,
-    FolderOpen,
-    Settings,
-    BarChart3,
-    Calendar,
-    MessageSquare
+    FolderOpen
 } from 'lucide-react'
 import { ROUTES } from '@/lib/utils/constants'
 import { Button } from '@/components/ui/button'
@@ -40,29 +36,6 @@ const navItems: NavItem[] = [
         title: 'Projektek',
         href: ROUTES.PROJECTS,
         icon: FolderOpen,
-    },
-    {
-        title: 'Naptár',
-        href: '/calendar',
-        icon: Calendar,
-    },
-    {
-        title: 'Üzenetek',
-        href: '/messages',
-        icon: MessageSquare,
-        badge: 5,
-    },
-    {
-        title: 'Jelentések',
-        href: '/reports',
-        icon: BarChart3,
-        roles: ['admin', 'team-lead'],
-    },
-    {
-        title: 'Beállítások',
-        href: '/settings',
-        icon: Settings,
-        roles: ['realm-admin'],
     },
 ]
 
@@ -106,21 +79,6 @@ export function Navigation() {
                 })}
             </div>
 
-            {/* Separator */}
-            <div className="border-t pt-4">
-                <div className="space-y-1">
-                    <Button
-                        asChild
-                        variant="ghost"
-                        className="w-full justify-start"
-                    >
-                        <Link href="/help">
-                            <MessageSquare className="mr-2 h-4 w-4" />
-                            Súgó & Támogatás
-                        </Link>
-                    </Button>
-                </div>
-            </div>
         </nav>
     )
 }
